@@ -44,6 +44,7 @@ ifeq ($(UNAME), Darwin)
 	ifeq ("$(shell which llvm-gcc)", "")
 		# We want to support all the way back to OS 10.6 (Snow Leopard), which used gcc
 		# instead of llvm. Omit some flags that this old gcc doesn't handle.
+		# NOTE no we fucking dont. we support from 12.whatever
 	else
 		# Assume it's a new enough Mac OS version
 		CPPFLAGS += -Wno-tautological-constant-out-of-range-compare
@@ -113,23 +114,18 @@ endif
 
 ###########################################################################
 # Built-in libusbx
+# build against libusb-1.0
+# in firefly i did this with cmake
 
-C_FILES += \
-	libusbx/libusb/core.c \
-	libusbx/libusb/descriptor.c \
-	libusbx/libusb/hotplug.c \
-	libusbx/libusb/io.c \
-	libusbx/libusb/strerror.c \
-	libusbx/libusb/sync.c
+# can we try using pkgconfig?
+LIBS += $(shell pkgconf --libs libusb-1.0)
+CPPFLAGS += $(shell pkgconf --cflags libusb-1.0)
+
 
 ifeq ($(UNAME), Darwin)
 	# Mac OS X
 
-	C_FILES += \
-		libusbx/libusb/os/darwin_usb.c \
-		libusbx/libusb/os/poll_posix.c \
-		libusbx/libusb/os/threads_posix.c
-
+	# hooboy thisll be fun
 	LIBS += -framework CoreFoundation -framework IOKit -lobjc
 	CPPFLAGS += -DOS_DARWIN -DTHREADS_POSIX -DPOLL_NFDS_TYPE=nfds_t \
 		-DLIBUSB_CALL= -DDEFAULT_VISIBILITY= -DHAVE_GETTIMEOFDAY
@@ -137,13 +133,6 @@ endif
 
 ifeq ($(UNAME), Linux)
 	# Linux
-
-	C_FILES += \
-		libusbx/libusb/os/linux_usbfs.c \
-		libusbx/libusb/os/linux_netlink.c \
-		libusbx/libusb/os/poll_posix.c \
-		libusbx/libusb/os/threads_posix.c
-
 	LIBS += -lpthread -lrt
 	CPPFLAGS += -DOS_LINUX -DTHREADS_POSIX -DPOLL_NFDS_TYPE=nfds_t -D_GNU_SOURCE \
 		-DLIBUSB_CALL= -DDEFAULT_VISIBILITY= -DHAVE_GETTIMEOFDAY -DHAVE_POLL_H \
@@ -153,19 +142,9 @@ endif
 ifneq ("$(MINGW)", "")
 	# Windows
 
-	C_FILES += \
-		libusbx/libusb/os/windows_usb.c \
-		libusbx/libusb/os/poll_windows.c \
-		libusbx/libusb/os/threads_windows.c
-
 	LIBS += -lws2_32
 	CPPFLAGS += -DOS_WINDOWS -DPOLL_NFDS_TYPE=int -DDEFAULT_VISIBILITY= -DHAVE_GETTIMEOFDAY
 endif
-
-INCLUDES += -Ilibusbx/libusb
-CLEAN_FILES += \
-	libusbx/libusb/*.d libusbx/libusb/*.o \
-	libusbx/libusb/os/*.d libusbx/libusb/os/*.o
 
 ###########################################################################
 # Build Rules

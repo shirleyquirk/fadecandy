@@ -32,6 +32,7 @@ USBDevice::USBDevice(libusb_device *device, const char *type, bool verbose)
       mSerialString(0),
       mVerbose(verbose)
 {
+    // this may not exist in libusb
     gettimeofday(&mTimestamp, NULL);
 }
 

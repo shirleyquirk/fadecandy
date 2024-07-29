@@ -63,6 +63,7 @@ EnttecDMXDevice::~EnttecDMXDevice()
      * If we have pending transfers, cancel them.
      * The Transfer objects themselves will be freed once libusb completes them.
      */
+    // may be broken for osx < 10.5. fyi
 
     for (std::set<Transfer*>::iterator i = mPending.begin(), e = mPending.end(); i != e; ++i) {
         Transfer *fct = *i;

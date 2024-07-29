@@ -123,15 +123,17 @@ bool FCServer::startUSB(libusb_context *usb)
     // Enumerate all attached devices, and get notified of hotplug events
     libusb_hotplug_register_callback(mUSB,
         libusb_hotplug_event(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED |
-                             LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
-        LIBUSB_HOTPLUG_ENUMERATE,
-        LIBUSB_HOTPLUG_MATCH_ANY,
-        LIBUSB_HOTPLUG_MATCH_ANY,
-        LIBUSB_HOTPLUG_MATCH_ANY,
+                             LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT), //events that will trigger this callback
+        LIBUSB_HOTPLUG_ENUMERATE, // callback will fire for devices already plugged in
+        LIBUSB_HOTPLUG_MATCH_ANY, // vendor_id to match
+        LIBUSB_HOTPLUG_MATCH_ANY, // product_id to match
+        LIBUSB_HOTPLUG_MATCH_ANY, // device class to match
         cbHotplug, this, 0);
 
     // On platforms without real USB hotplug, emulate it with a polling thread
+    // TODO i assume this doesnt apply? may need to look into it
     if (!libusb_has_capability(LIBUSB_CAP_HAS_HOTPLUG)) {
+        printf("WARNING: libusb on this system doesnt have hotplug capability!\n");
         mUSBHotplugThread = new tthread::thread(usbHotplugThreadFunc, this);
     }
 
