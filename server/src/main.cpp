@@ -88,6 +88,7 @@ int main(int argc, char **argv)
     } else {
         // Unknown, show usage message.
 
+        // TODO edit this usage message
         fprintf(stderr,
             "\n"
             "Fadecandy Open Pixel Control server\n"

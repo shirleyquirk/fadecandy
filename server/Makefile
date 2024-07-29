@@ -7,17 +7,13 @@ CPP_FILES += \
 	src/main.cpp \
 	src/tcpnetserver.cpp \
 	src/usbdevice.cpp \
-	src/fcdevice.cpp \
-	src/glimmerdevice.cpp \
 	src/enttecdmxdevice.cpp \
 	src/fcserver.cpp \
 	src/version.cpp \
 	src/tinythread.cpp \
-	src/spidevice.cpp \
-	src/apa102spidevice.cpp \
 	src/httpdocs.cpp
 
-INCLUDES += -Isrc -I../common
+INCLUDES += -Isrc
 CLEAN_FILES += src/*.d src/*.o src/httpdocs.cpp
 CPPFLAGS += -Wno-strict-aliasing
 

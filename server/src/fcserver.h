@@ -26,7 +26,6 @@
 #include "opc.h"
 #include "tcpnetserver.h"
 #include "usbdevice.h"
-#include "spidevice.h"
 #include <sstream>
 #include <vector>
 #include <libusb.h>
@@ -65,8 +64,6 @@ private:
     std::vector<USBDevice*> mUSBDevices;
     struct libusb_context *mUSB;
 
-    std::vector<SPIDevice*> mSPIDevices;
-
     static void cbOpcMessage(OPC::Message &msg, void *context);
     static void cbJsonMessage(libwebsocket *wsi, rapidjson::Document &message, void *context);
 
@@ -79,9 +76,6 @@ private:
     bool usbHotplugPoll();
 
     static void usbHotplugThreadFunc(void *arg);
-
-    bool startSPI();
-    void openAPA102SPIDevice(uint32_t port, int numLights);
 
     // JSON event broadcasters
     void jsonConnectedDevicesChanged();
