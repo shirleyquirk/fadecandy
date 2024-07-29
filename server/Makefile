@@ -118,8 +118,8 @@ endif
 # in firefly i did this with cmake
 
 # can we try using pkgconfig?
-LIBS += $(shell pkgconf --libs libusb-1.0)
-CPPFLAGS += $(shell pkgconf --cflags libusb-1.0)
+LIBS += $(shell pkg-config --libs libusb-1.0)
+CPPFLAGS += $(shell pkg-config --cflags libusb-1.0)
 
 
 ifeq ($(UNAME), Darwin)

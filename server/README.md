@@ -19,9 +19,9 @@ When you run the Fadecandy Server, it will provide a simple web interface. By de
 Build
 -----
 
-Pre-built binaries are included in the **bin** directory, but you can also build it yourself. All required libraries are included as git submodules.
-
 It can build on Windows, Mac OS, or Linux using Make and other command line tools. On Windows, the build uses MinGW and gcc.
+
+Windows NOT tested
 
 
 Getting Started
@@ -29,8 +29,17 @@ Getting Started
 
 In order to build the binary from source you need to run the following commands inside of the **server** directory:
 
+this package depends upon libusb-1.0, and pkgconfig to find it
+
+on OsX i tested macPorts, installing libusb-devel and pkgconfig.
+if you have brew that's probably better, try that
+
+after cloning the repo, remember to init the submodules
 ```bash
-$ make submodules
+$ git submodule updat --init --recursive
+```
+to build it is
+```bash
 $ make
 ```
 
@@ -40,48 +49,4 @@ If you want to remove the compiled binary and source files run:
 
 ```bash
 $ make clean
-```
-
-To locally install the binary, a default configuration file (unless one already exists), and SystemD service
-to launch the FadeCandy server, run this command:
-
-```bash
-$ sudo make install
-```
-
-After editing the configuration file in **/etc/fcserver/config.json**, you can enable and start the service
-with the following commands. The service will automatically start after a reboot unless disabled again.
-
-```base
-$ sudo systemctl enable fcserver
-$ sudo systemctl start fcserver
-```
-
-Build using CMake
------------------
-
-The CMake project supports building a Debian package including a SystemD service. Run the following commands in the **server** directory to build using it.
-
-To build the binaries and get a Debian package:
-
-
-```bash
-$ make submodules # Fetches submodule git repositories
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make          # Builds the binaries.
-
-$ cpack -G DEB  # Generates the debian package.
-```
-
-To list CMake options:
-
-```bash
-$ cmake -LH ..
-```
-
-You can also install on the system without doing it via a Debian package:
-```bash
-$ make install
 ```
