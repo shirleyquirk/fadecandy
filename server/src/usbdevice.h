@@ -40,6 +40,9 @@
  * overhead of copying the buffer twice, so we only do this on platforms where the kernel
  * isn't already copying it.
  */
+ // Benjamin notes: this may still be relevant. on linux we can get a device-mapped buffer
+ // through libusb_dev_mem_alloc/free
+ // which maybe doesnt work on osx idk
 
 #ifdef OS_LINUX
  // No need to copy the buffer
