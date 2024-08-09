@@ -39,9 +39,11 @@ USBDevice::USBDevice(libusb_device *device, const char *type, bool verbose)
 USBDevice::~USBDevice()
 {
     if (mHandle) {
+        printf("closing usbdevice handle\n");
         libusb_close(mHandle);
     }
     if (mDevice) {
+        printf("unreffing usbdevice\n");
         libusb_unref_device(mDevice);
     }
 }

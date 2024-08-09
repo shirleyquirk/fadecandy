@@ -115,10 +115,12 @@ int EnttecDMXDevice::open()
 
         r = libusb_get_string_descriptor_ascii(mHandle, dd.iManufacturer, (uint8_t*)manufacturer, sizeof manufacturer);
         if (r < 0) {
+            printf("failed to get manufacturer id\n");
             return r;
         }
         r = libusb_get_string_descriptor_ascii(mHandle, dd.iProduct, (uint8_t*)product, sizeof product);
         if (r < 0) {
+            printf("failed to get product id\n");
             return r;
         }
 
@@ -136,12 +138,14 @@ int EnttecDMXDevice::open()
 
         r = libusb_claim_interface(mHandle, 0);
         if (r < 0) {
+            printf("failed to claim interface");
             return r;
         }
 
         r = libusb_get_string_descriptor_ascii(mHandle, dd.iSerialNumber,
             (uint8_t*)mSerialBuffer, sizeof mSerialBuffer);
         if (r < 0) {
+            printf("failed to get serialnumber\n");
             return r;
         }
     }
