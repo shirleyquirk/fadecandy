@@ -30,6 +30,7 @@
 #include <vector>
 #include <libusb.h>
 #include "tinythread.h"
+#include <signal.h>
 
 
 class FCServer
@@ -63,6 +64,9 @@ private:
 
     std::vector<USBDevice*> mUSBDevices;
     struct libusb_context *mUSB;
+
+    static sig_atomic_t run;
+    static void interruptHandler(int);
 
     static void cbOpcMessage(OPC::Message &msg, void *context);
     static void cbJsonMessage(libwebsocket *wsi, rapidjson::Document &message, void *context);

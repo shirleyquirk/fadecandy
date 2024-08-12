@@ -27,10 +27,27 @@
 #include "enttecdmxdevice.h"
 #include <ctype.h>
 #include <iostream>
+#include <signal.h>
 
 #ifdef FCSERVER_HAS_WIRINGPI
 #include <wiringPi.h>
 #endif
+
+sig_atomic_t FCServer::run = true;
+
+void FCServer::interruptHandler(const int signal){
+    switch(signal){
+        case(SIGINT)://ctrl-c
+        case(SIGTERM)://default kill
+        case(SIGHUP)://lit. hang-up. ssh session bye
+        case(SIGQUIT)://ctrl-/?
+            run = false;
+            break;
+        default:
+            ;
+            //unhandled signal
+    }
+}
 
 FCServer::FCServer(rapidjson::Document &config)
     : mConfig(config),
@@ -44,6 +61,21 @@ FCServer::FCServer(rapidjson::Document &config)
       mUSBHotplugThread(0),
       mUSB(0)
 {
+    /*
+     * set up signal handler
+     * we use sigaction rather than signal
+     * we make no attempt to support windows
+     * only osx and other posix
+     */
+    struct sigaction sigbreak;
+    // set exactly one of sa_handler(int) or sa_sigaction(int,struct
+    sigbreak.sa_handler = &FCServer::interruptHandler;
+    sigemptyset(&sigbreak.sa_mask);
+    sigbreak.sa_flags = 0;
+    for( int sig : {SIGINT,SIGTERM,SIGHUP,SIGQUIT} ){
+        if (sigaction(sig,&sigbreak,NULL) != 0 ) { mError << "failed to install signal handler\n"; }
+    }
+
     /*
      * Validate the listen [host, port] list.
      */
@@ -273,7 +305,7 @@ void FCServer::usbDeviceLeft(std::vector<USBDevice*>::iterator iter)
 
 void FCServer::mainLoop()
 {
-    for (;;) {
+    while(run) {
         struct timeval timeout;
         timeout.tv_sec = 0;
         timeout.tv_usec = 100000;
@@ -282,6 +314,7 @@ void FCServer::mainLoop()
         if (err) {
             std::clog << "Error handling USB events: " << libusb_strerror(libusb_error(err)) << "\n";
             // Sometimes this happens on Windows during normal operation if we're queueing a lot of output URBs. Meh.
+            // This will also happen on a ctrl-c? idk why that should be.
         }
 
         // We may have been asked for a one-shot poll, to retry connecting devices that failed.
