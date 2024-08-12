@@ -134,6 +134,9 @@ int main(int argc, char **argv)
 
     server.mainLoop();
 
-    // If mainLoop() exits, it was an error
+    //mainLoop exits gracefully on e.g. ctrl-c
+    //permitting destructors to be run like this one
+    libusb_exit(usb);
+    fprintf(stdout,"Exiting\n");
     return 8;
 }
